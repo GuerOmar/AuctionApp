@@ -22,14 +22,28 @@ public class AuctionController {
     AuctionRepository auctionRepository;
 
 
+
+
     @Autowired
     AuctionInfoRepository auctionInfoRepository;
     @GetMapping()
-    public synchronized Auction getById(@PathVariable String auctionId) {
+    public synchronized AuctionMapper getById(@PathVariable String auctionId) {
         try {
-            log.info(String.valueOf(auctionRepository.getById(UUID.fromString(auctionId))));
-            return auctionRepository.getById(UUID.fromString(auctionId));
-        }
+            //log.info(String.valueOf(auctionRepository.getById(UUID.fromString(auctionId))));
+            Auction auction = auctionRepository.getById(UUID.fromString(auctionId));
+            AuctionInfo auctionInfo = auctionInfoRepository.getById(UUID.fromString(auctionId));
+            AuctionMapper auctionMapper=  new AuctionMapper(auction.getAuctionId(), auctionInfo.getStartDate(),
+                    auctionInfo.getDuration(),
+                    auctionInfo.getSellerId(),
+                    auction.getBidderId(),
+                    auction.getBid(),
+                    auction.getType().equals("FINISH"));
+            log.info(String.valueOf(auctionMapper));
+            log.info(String.valueOf(auctionInfo.getId()));
+            log.info(String.valueOf(auction.getAuctionId()));
+
+            return auctionMapper;
+            }
         catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "auction not found"

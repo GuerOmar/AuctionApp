@@ -33,8 +33,7 @@ public class AuctionConsumer  implements  ConsumerSeekAware {
             log.info(String.valueOf(auction.getAuctionId()));
             auctionRepository.addAuction(auction);
             if(!auction.getType().equals("FINISH")) {
-
-                log.info(String.valueOf(auctionService.getById(auction.getAuctionId())));
+                //log.info(String.valueOf(auctionService.getById(auction.getAuctionId())));
                 auctionInfoRepository.addAuction(auctionService.getById(auction.getAuctionId()));
             }
 
