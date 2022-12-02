@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    bootstrap-servers: breisen.datamix.ovh:9093
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "com.example.auctionapp.Auction"
