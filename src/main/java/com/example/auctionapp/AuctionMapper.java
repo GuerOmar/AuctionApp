@@ -22,4 +22,32 @@ public class AuctionMapper {
         this.bid = bid;
         this.expired = expired;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public int getSellerId() {
+        return sellerId;
+    }
+
+    public int getBidderId() {
+        return bidderId;
+    }
+
+    public double getBid() {
+        return bid;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
 }

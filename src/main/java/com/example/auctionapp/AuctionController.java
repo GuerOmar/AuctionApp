@@ -38,9 +38,6 @@ public class AuctionController {
                     auction.getBidderId(),
                     auction.getBid(),
                     auction.getType().equals("FINISH"));
-            log.info(String.valueOf(auctionMapper));
-            log.info(String.valueOf(auctionInfo.getId()));
-            log.info(String.valueOf(auction.getAuctionId()));
 
             return auctionMapper;
             }
