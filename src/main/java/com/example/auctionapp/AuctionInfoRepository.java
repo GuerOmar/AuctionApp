@@ -16,7 +16,7 @@ public class AuctionInfoRepository {
     public AuctionInfo getById(UUID id){
         AuctionInfo auction = auctionInfos.get(id);
         if (auction == null) {
-            throw new IllegalArgumentException("Auction not exists");
+            throw new IllegalArgumentException("Auction Info not exists");
         }
         return auction;
     }
