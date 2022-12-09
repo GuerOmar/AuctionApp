@@ -39,26 +39,46 @@ public class AuctionConsumer  implements  ConsumerSeekAware {
 
     @KafkaListener(id = "hgog-chat", topics = TOPIC)
     public synchronized void received(Auction auction) throws Exception {
-            log.info(String.valueOf(auction.getAuctionId()));
+            log.info("Auction ID : "+String.valueOf(auction.getAuctionId())+", auction Type : "+auction.getType());
 
             if(!auction.getType().equals("FINISH")) {
-                //log.info(String.valueOf(auctionService.getById(auction.getAuctionId())));
-                Auction auc = auctionRepository.getById(auction.getAuctionId());
-                AuctionInfo auctionInfo = auctionInfoRepository.getById(auction.getAuctionId());
-                if(auc.getBid() >= auction.getBid() ||     (auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()).compareTo(auction.getTs()) > 0)){
-                    log.info("ERROR : " + auction.getAuctionId());
+                Auction auc = null;
+                AuctionInfo auctionInfo = auctionService.getById(auction.getAuctionId());
+                try{
+                   auc = auctionRepository.getById(auction.getAuctionId());
+
+                }
+                catch (IllegalArgumentException e) {
+                    log.info("Exception : Auction doesn't exist");
+                }
+                if (auc != null && auc.getBid() >= auction.getBid()){
+                    log.info("ERROR on bid inf "+auc.getBid()+" // "+ auction.getBid() );
+                }
+                if(auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()).compareTo(auction.getTs()) < 0){
+                    log.info("ERROR on TIME "+auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()) + " // "+auction.getTs());
+                }
+                if( (auc != null && auc.getBid() >= auction.getBid()) ||     (auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()).compareTo(auction.getTs()) < 0)){
+
                     kafkaTemplateAlert.send(TOPIC_ALERT,auction);
                 }
-                auctionRepository.addAuction(auction);
-                auctionInfoRepository.addAuction(auctionService.getById(auction.getAuctionId()));
+                else{
+                    auctionRepository.addAuction(auction);
+                    auctionInfoRepository.addAuction(auctionInfo);
+                }
             }
             else{
-                log.info("FINISHED "+String.valueOf(auction.getAuctionId())+" "+String.valueOf(auction.getTs()));
-                Auction auc = auctionRepository.getById(auction.getAuctionId());
-                auc.setType("FINISH");
-                AuctionInfo auctionInfo = auctionInfoRepository.getById(auction.getAuctionId());
-                kafkaTemplate.send(TOPIC_TRANSACTION,new Transaction(auctionInfo.getSellerId(),auc.getBidderId(),auc.getBid()));
-                log.info("FINISHED "+String.valueOf(auc.getAuctionId())+" "+String.valueOf(auc.getTs()));
+                try{
+
+                    Auction auc = auctionRepository.getById(auction.getAuctionId());
+                    auc.setType("FINISH");
+                    AuctionInfo auctionInfo = auctionInfoRepository.getById(auction.getAuctionId());
+                    kafkaTemplate.send(TOPIC_TRANSACTION,new Transaction(auctionInfo.getSellerId(),auc.getBidderId(),auc.getBid()));
+                    log.info("FINISHED "+String.valueOf(auc.getAuctionId()));
+                }
+                catch (IllegalArgumentException e){
+                    log.info("Exception : We got a finished but we don't have the auction ") ;
+                }
+
 
             }
 

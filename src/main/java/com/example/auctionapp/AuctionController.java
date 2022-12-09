@@ -29,7 +29,6 @@ public class AuctionController {
     @GetMapping()
     public synchronized AuctionMapper getById(@PathVariable String auctionId) {
         try {
-            //log.info(String.valueOf(auctionRepository.getById(UUID.fromString(auctionId))));
             Auction auction = auctionRepository.getById(UUID.fromString(auctionId));
             AuctionInfo auctionInfo = auctionInfoRepository.getById(UUID.fromString(auctionId));
             AuctionMapper auctionMapper=  new AuctionMapper(auction.getAuctionId(), auctionInfo.getStartDate(),

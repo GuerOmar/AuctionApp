@@ -13,7 +13,7 @@ public class AuctionRepository {
         auctions.put(auction.getAuctionId(),auction);
     }
 
-    public Auction getById(UUID id){
+    public synchronized Auction getById(UUID id){
         Auction auction = auctions.get(id);
         if (auction == null) {
             throw new IllegalArgumentException("Auction not exists");
