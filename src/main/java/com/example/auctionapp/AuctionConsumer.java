@@ -37,7 +37,7 @@ public class AuctionConsumer  implements  ConsumerSeekAware {
         callback.seekToEnd(assignments.keySet());
     }
 
-    @KafkaListener(id = "hgog-chat", topics = TOPIC)
+    @KafkaListener(id = "hgog-auction", topics = TOPIC)
     public synchronized void received(Auction auction) throws Exception {
             log.info("Auction ID : "+String.valueOf(auction.getAuctionId())+", auction Type : "+auction.getType());
 
@@ -52,10 +52,10 @@ public class AuctionConsumer  implements  ConsumerSeekAware {
                     log.info("Exception : Auction doesn't exist");
                 }
                 if (auc != null && auc.getBid() >= auction.getBid()){
-                    log.info("ERROR on bid inf "+auc.getBid()+" // "+ auction.getBid() );
+                    log.info("ERROR on bid have : "+auc.getBid()+" // got :"+ auction.getBid() );
                 }
                 if(auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()).compareTo(auction.getTs()) < 0){
-                    log.info("ERROR on TIME "+auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()) + " // "+auction.getTs());
+                    log.info("ERROR on TIME ends on :"+auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()) + " // got on : "+auction.getTs());
                 }
                 if( (auc != null && auc.getBid() >= auction.getBid()) ||     (auctionInfo.getStartDate().toInstant().plusSeconds(auctionInfo.getDuration().toSeconds()).compareTo(auction.getTs()) < 0)){
 
